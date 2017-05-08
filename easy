@@ -1,0 +1,37 @@
+1.three computer:
+	10.10.80.248(haproxy)
+	10.10.80.249(web1)
+	10.10.80.250(web2)
+
+2.configure
+
+	httpd:	10.10.80.249:8080
+	httpd:	10.10.80.252:8080
+
+
+3.haproxy:yum install -y haproxy
+
+configure log location:
+vim  /etc/haproxy/haproxy.cfg
+
+    log         127.0.0.1 local2
+
+vim  /etc/sysconfig/syslog
+    local2.*                       /var/log/haproxy.log
+
+
+
+
+configure backend:
+#add
+frontend main :80             #main 是给前端起的名字，可以随便起
+        default_backend websrvs #websrvs 是给后端起的名字
+
+backend websrvs			#定义后端
+
+        balance         roundrobin	#调度算法
+
+        server web1 10.10.80.249:8080 check
+
+        server web2 10.10.80.252:8080 check
+
